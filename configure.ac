@@ -57,4 +57,5 @@ AM_CONDITIONAL(HAVE_CXX17,test x$HAVE_CXX17 = xyes)
 AC_OUTPUT([
   Makefile
   include/Makefile
-  tests/Makefile])
+  tests/Makefile
+  examples/cpp17/algorithms/Makefile])
