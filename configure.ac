@@ -48,13 +48,27 @@ AC_COMPILE_IFELSE(
   [AC_MSG_RESULT([no])
     HAVE_CXX17=no;])
 
+AC_MSG_CHECKING([whether Concepts TS is enabled])
+AC_COMPILE_IFELSE(
+  [AC_LANG_PROGRAM(
+    [[#if !defined(__cpp_concepts)]]
+    [[#error C++ Concepts TS not available]]
+    [[#endif]])],
+  [AC_MSG_RESULT([yes])
+    HAVE_CONCEPTS_TS=yes;],
+  [AC_MSG_RESULT([no])
+    HAVE_CONCEPTS_TS=no;])
+
 AM_CONDITIONAL(HAVE_CXX11,test x$HAVE_CXX11 = xyes)
 
 AM_CONDITIONAL(HAVE_CXX14,test x$HAVE_CXX14 = xyes)
 
 AM_CONDITIONAL(HAVE_CXX17,test x$HAVE_CXX17 = xyes)
 
+AM_CONDITIONAL(HAVE_CONCEPTS_TS,test x$HAVE_CONCEPTS_TS = xyes)
+
 AC_OUTPUT([
   Makefile
   include/Makefile
+  examples/Makefile
   tests/Makefile])

@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign dist-bzip2 dist-zip
 
-SUBDIRS = include tests
+SUBDIRS = include tests examples
 
 MAINTAINERCLEANFILES = \
 	$(srcdir)/aclocal.m4 \
