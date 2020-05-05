@@ -355,4 +355,14 @@
 # endif // !defined(PROPRIA_DISABLE_STD_TYPE_TRAITS)
 #endif // !defined(PROPRIA_HAS_STD_TYPE_TRAITS)
 
+// Some versions of gcc generate spurious warnings about unused variables.
+#if defined(__GNUC__)
+# if (__GNUC__ >= 4)
+#  define PROPRIA_UNUSED_VARIABLE __attribute__((__unused__))
+# endif // (__GNUC__ >= 4)
+#endif // defined(__GNUC__)
+#if !defined(PROPRIA_UNUSED_VARIABLE)
+# define PROPRIA_UNUSED_VARIABLE
+#endif // !defined(ASIO_UNUSED_VARIABLE)
+
 #endif // PROPRIA_DETAIL_CONFIG_HPP

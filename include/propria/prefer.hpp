@@ -341,7 +341,8 @@ namespace propria {
 namespace {
 
 static PROPRIA_CONSTEXPR const propria_prefer_fn::impl&
-  prefer = propria_prefer_fn::static_instance<>::instance;
+  prefer PROPRIA_UNUSED_VARIABLE
+    = propria_prefer_fn::static_instance<>::instance;
 
 } // namespace
 

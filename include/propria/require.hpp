@@ -303,7 +303,8 @@ namespace propria {
 namespace {
 
 static PROPRIA_CONSTEXPR const propria_require_fn::impl&
-  require = propria_require_fn::static_instance<>::instance;
+  require PROPRIA_UNUSED_VARIABLE
+    = propria_require_fn::static_instance<>::instance;
 
 } // namespace
 

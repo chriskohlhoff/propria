@@ -193,7 +193,8 @@ namespace propria {
 namespace {
 
 static PROPRIA_CONSTEXPR const propria_query_fn::impl&
-  query = propria_query_fn::static_instance<>::instance;
+  query PROPRIA_UNUSED_VARIABLE
+    = propria_query_fn::static_instance<>::instance;
 
 } // namespace
 

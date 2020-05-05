@@ -197,7 +197,8 @@ namespace propria {
 namespace {
 
 static PROPRIA_CONSTEXPR const propria_require_concept_fn::impl&
-  require_concept = propria_require_concept_fn::static_instance<>::instance;
+  require_concept PROPRIA_UNUSED_VARIABLE
+    = propria_require_concept_fn::static_instance<>::instance;
 
 } // namespace
 
