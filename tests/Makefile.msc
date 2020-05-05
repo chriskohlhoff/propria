@@ -1,5 +1,9 @@
 COMMON_CXXFLAGS = -nologo -GR -EHsc -I. -I../include
 
+!ifdef CXXLATEST
+STD_CXXFLAGS = -std:c++latest
+!endif
+
 !ifdef WARNINGS
 WARNINGS_CXXFLAGS = -W4
 !endif
@@ -19,6 +23,7 @@ DEBUG_CXXFLAGS = -O2 -MD
 !endif
 
 CXXFLAGS = \
+	$(STD_CXXFLAGS) \
 	$(COMMON_CXXFLAGS) \
 	$(WARNINGS_CXXFLAGS) \
 	$(DEBUG_CXXFLAGS)
