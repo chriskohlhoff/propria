@@ -30,7 +30,7 @@ struct is_applicable_property<object, prop>
 namespace traits {
 
 template<>
-struct query_static<object, prop>
+struct static_query<object, prop>
 {
   static constexpr bool is_valid = true;
   static constexpr bool is_noexcept = true;

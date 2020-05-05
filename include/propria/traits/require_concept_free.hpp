@@ -94,7 +94,14 @@ struct require_concept_free_trait
 namespace traits {
 
 template <typename T, typename Property, typename = void>
-struct require_concept_free : detail::require_concept_free_trait<T, Property>
+struct require_concept_free_default :
+  detail::require_concept_free_trait<T, Property>
+{
+};
+
+template <typename T, typename Property, typename = void>
+struct require_concept_free :
+  require_concept_free_default<T, Property>
 {
 };
 

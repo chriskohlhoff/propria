@@ -94,7 +94,14 @@ struct prefer_free_trait
 namespace traits {
 
 template <typename T, typename Property, typename = void>
-struct prefer_free : detail::prefer_free_trait<T, Property>
+struct prefer_free_default :
+  detail::prefer_free_trait<T, Property>
+{
+};
+
+template <typename T, typename Property, typename = void>
+struct prefer_free :
+  prefer_free_default<T, Property>
 {
 };
 

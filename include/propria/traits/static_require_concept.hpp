@@ -1,5 +1,5 @@
 //
-// traits/require_concept_static.hpp
+// traits/static_require_concept.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef PROPRIA_TRAITS_REQUIRE_CONCEPT_STATIC_HPP
-#define PROPRIA_TRAITS_REQUIRE_CONCEPT_STATIC_HPP
+#ifndef PROPRIA_TRAITS_STATIC_REQUIRE_CONCEPT_HPP
+#define PROPRIA_TRAITS_STATIC_REQUIRE_CONCEPT_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
@@ -26,7 +26,7 @@ namespace detail {
   && defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
 
 template <typename T, typename Property, typename = void>
-struct require_concept_static_trait
+struct static_require_concept_trait
 {
   PROPRIA_STATIC_CONSTEXPR(bool, is_valid = false);
 };
@@ -34,7 +34,7 @@ struct require_concept_static_trait
 #if defined(PROPRIA_HAS_WORKING_EXPRESSION_SFINAE)
 
 template <typename T, typename Property>
-struct require_concept_static_trait<T, Property,
+struct static_require_concept_trait<T, Property,
   typename enable_if<
     Property::value() == Property::template static_query_v<T>
   >::type>
@@ -44,26 +44,26 @@ struct require_concept_static_trait<T, Property,
 
 #else // defined(PROPRIA_HAS_WORKING_EXPRESSION_SFINAE)
 
-false_type require_concept_static_test(...);
+false_type static_require_concept_test(...);
 
 template <typename T, typename Property>
-true_type require_concept_static_test(T*, Property*,
+true_type static_require_concept_test(T*, Property*,
     typename enable_if<
       Property::value() == Property::template static_query_v<T>
     >::type* = 0);
 
 template <typename T, typename Property>
-struct has_require_concept_static
+struct has_static_require_concept
 {
   PROPRIA_STATIC_CONSTEXPR(bool, value =
-    decltype((require_concept_static_test)(
+    decltype((static_require_concept_test)(
       static_cast<T*>(0), static_cast<Property*>(0)))::value);
 };
 
 template <typename T, typename Property>
-struct require_concept_static_trait<T, Property,
+struct static_require_concept_trait<T, Property,
   typename enable_if<
-    has_require_concept_static<T, Property>::value
+    has_static_require_concept<T, Property>::value
   >::type>
 {
   PROPRIA_STATIC_CONSTEXPR(bool, is_valid = true);
@@ -76,7 +76,7 @@ struct require_concept_static_trait<T, Property,
       //   && defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
 
 template <typename T, typename Property>
-struct require_concept_static_trait
+struct static_require_concept_trait
 {
   PROPRIA_STATIC_CONSTEXPR(bool, is_valid = false);
 };
@@ -89,12 +89,18 @@ struct require_concept_static_trait
 namespace traits {
 
 template <typename T, typename Property, typename = void>
-struct require_concept_static :
-  detail::require_concept_static_trait<T, Property>
+struct static_require_concept_default :
+  detail::static_require_concept_trait<T, Property>
+{
+};
+
+template <typename T, typename Property, typename = void>
+struct static_require_concept :
+  static_require_concept_default<T, Property>
 {
 };
 
 } // namespace traits
 } // namespace propria
 
-#endif // PROPRIA_TRAITS_REQUIRE_CONCEPT_STATIC_HPP
+#endif // PROPRIA_TRAITS_STATIC_REQUIRE_CONCEPT_HPP

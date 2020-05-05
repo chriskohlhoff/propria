@@ -18,7 +18,7 @@
 #include "propria/detail/config.hpp"
 #include "propria/detail/type_traits.hpp"
 #include "propria/is_applicable_property.hpp"
-#include "propria/traits/require_static.hpp"
+#include "propria/traits/static_require.hpp"
 #include "propria/traits/require_member.hpp"
 #include "propria/traits/prefer_free.hpp"
 
@@ -30,7 +30,7 @@ using propria::detail::enable_if;
 using propria::is_applicable_property;
 using propria::traits::prefer_free;
 using propria::traits::require_member;
-using propria::traits::require_static;
+using propria::traits::static_require;
 
 enum overload_type
 {
@@ -46,6 +46,7 @@ template <typename T, typename Properties, typename = void>
 struct call_traits
 {
   PROPRIA_STATIC_CONSTEXPR(overload_type, overload = ill_formed);
+  PROPRIA_STATIC_CONSTEXPR(bool, is_noexcept = false);
 };
 
 template <typename T, typename Property>
@@ -59,7 +60,7 @@ struct call_traits<T, void(Property),
       &&
       decay<Property>::type::is_preferable
       &&
-      require_static<
+      static_require<
         typename decay<T>::type,
         typename decay<Property>::type
       >::is_valid
@@ -87,7 +88,7 @@ struct call_traits<T, void(Property),
       &&
       decay<Property>::type::is_preferable
       &&
-      !require_static<
+      !static_require<
         typename decay<T>::type,
         typename decay<Property>::type
       >::is_valid
@@ -117,7 +118,7 @@ struct call_traits<T, void(Property),
       &&
       decay<Property>::type::is_preferable
       &&
-      !require_static<
+      !static_require<
         typename decay<T>::type,
         typename decay<Property>::type
       >::is_valid
@@ -152,7 +153,7 @@ struct call_traits<T, void(Property),
       &&
       decay<Property>::type::is_preferable
       &&
-      !require_static<
+      !static_require<
         typename decay<T>::type,
         typename decay<Property>::type
       >::is_valid
@@ -247,7 +248,7 @@ struct impl
   operator()(
       PROPRIA_MOVE_ARG(T) t,
       PROPRIA_MOVE_ARG(Property)) const
-    PROPRIA_CONDITIONAL_NOEXCEPT((
+    PROPRIA_NOEXCEPT_IF((
       call_traits<T, void(Property)>::is_noexcept))
   {
     return PROPRIA_MOVE_CAST(T)(t);
@@ -261,7 +262,7 @@ struct impl
   operator()(
       PROPRIA_MOVE_ARG(T) t,
       PROPRIA_MOVE_ARG(Property) p) const
-    PROPRIA_CONDITIONAL_NOEXCEPT((
+    PROPRIA_NOEXCEPT_IF((
       call_traits<T, void(Property)>::is_noexcept))
   {
     return PROPRIA_MOVE_CAST(T)(t).require(
@@ -276,7 +277,7 @@ struct impl
   operator()(
       PROPRIA_MOVE_ARG(T) t,
       PROPRIA_MOVE_ARG(Property) p) const
-    PROPRIA_CONDITIONAL_NOEXCEPT((
+    PROPRIA_NOEXCEPT_IF((
       call_traits<T, void(Property)>::is_noexcept))
   {
     return prefer(
@@ -293,7 +294,7 @@ struct impl
       PROPRIA_MOVE_ARG(T) t,
       PROPRIA_MOVE_ARG(P0) p0,
       PROPRIA_MOVE_ARG(P1) p1) const
-    PROPRIA_CONDITIONAL_NOEXCEPT((
+    PROPRIA_NOEXCEPT_IF((
       call_traits<T, void(P0, P1)>::is_noexcept))
   {
     return (*this)(
@@ -303,7 +304,8 @@ struct impl
         PROPRIA_MOVE_CAST(P1)(p1));
   }
 
-  template <typename T, typename P0, typename P1, typename PROPRIA_ELLIPSIS PN>
+  template <typename T, typename P0, typename P1,
+    typename PROPRIA_ELLIPSIS PN>
   PROPRIA_CONSTEXPR typename enable_if<
     call_traits<T, void(P0, P1, PN PROPRIA_ELLIPSIS)>::overload == n_props,
     typename call_traits<T, void(P0, P1, PN PROPRIA_ELLIPSIS)>::result_type
@@ -313,7 +315,7 @@ struct impl
       PROPRIA_MOVE_ARG(P0) p0,
       PROPRIA_MOVE_ARG(P1) p1,
       PROPRIA_MOVE_ARG(PN) PROPRIA_ELLIPSIS pn) const
-    PROPRIA_CONDITIONAL_NOEXCEPT((
+    PROPRIA_NOEXCEPT_IF((
       call_traits<T, void(P0, P1, PN PROPRIA_ELLIPSIS)>::is_noexcept))
   {
     return (*this)(
@@ -393,6 +395,55 @@ struct can_prefer<T> :
 template <typename T, typename PROPRIA_ELLIPSIS Properties>
 constexpr bool can_prefer_v
   = can_prefer<T, Properties PROPRIA_ELLIPSIS>::value;
+
+#endif // defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
+
+#if defined(PROPRIA_HAS_VARIADIC_TEMPLATES)
+
+template <typename T, typename... Properties>
+struct is_nothrow_prefer :
+  detail::integral_constant<bool,
+    propria_prefer_fn::call_traits<T, void(Properties...)>::is_noexcept>
+{
+};
+
+#else // defined(PROPRIA_HAS_VARIADIC_TEMPLATES)
+
+template <typename T, typename P0 = void,
+    typename P1 = void, typename P2 = void>
+struct is_nothrow_prefer :
+  detail::integral_constant<bool,
+    propria_prefer_fn::call_traits<T, void(P0, P1, P2)>::is_noexcept>
+{
+};
+
+template <typename T, typename P0, typename P1>
+struct is_nothrow_prefer<T, P0, P1> :
+  detail::integral_constant<bool,
+    propria_prefer_fn::call_traits<T, void(P0, P1)>::is_noexcept>
+{
+};
+
+template <typename T, typename P0>
+struct is_nothrow_prefer<T, P0> :
+  detail::integral_constant<bool,
+    propria_prefer_fn::call_traits<T, void(P0)>::is_noexcept>
+{
+};
+
+template <typename T>
+struct is_nothrow_prefer<T> :
+  detail::false_type
+{
+};
+
+#endif // defined(PROPRIA_HAS_VARIADIC_TEMPLATES)
+
+#if defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
+
+template <typename T, typename PROPRIA_ELLIPSIS Properties>
+constexpr bool is_nothrow_prefer_v
+  = is_nothrow_prefer<T, Properties PROPRIA_ELLIPSIS>::value;
 
 #endif // defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
 

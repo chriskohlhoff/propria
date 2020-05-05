@@ -94,7 +94,14 @@ struct query_free_trait
 namespace traits {
 
 template <typename T, typename Property, typename = void>
-struct query_free : detail::query_free_trait<T, Property>
+struct query_free_default :
+  detail::query_free_trait<T, Property>
+{
+};
+
+template <typename T, typename Property, typename = void>
+struct query_free :
+  query_free_default<T, Property>
 {
 };
 

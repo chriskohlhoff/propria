@@ -18,9 +18,9 @@
 #include "propria/detail/config.hpp"
 #include "propria/detail/type_traits.hpp"
 #include "propria/is_applicable_property.hpp"
-#include "propria/traits/require_concept_static.hpp"
 #include "propria/traits/require_concept_member.hpp"
 #include "propria/traits/require_concept_free.hpp"
+#include "propria/traits/static_require_concept.hpp"
 
 namespace propria_require_concept_fn {
 
@@ -30,7 +30,7 @@ using propria::detail::enable_if;
 using propria::is_applicable_property;
 using propria::traits::require_concept_free;
 using propria::traits::require_concept_member;
-using propria::traits::require_concept_static;
+using propria::traits::static_require_concept;
 
 enum overload_type
 {
@@ -44,6 +44,7 @@ template <typename T, typename Properties, typename = void>
 struct call_traits
 {
   PROPRIA_STATIC_CONSTEXPR(overload_type, overload = ill_formed);
+  PROPRIA_STATIC_CONSTEXPR(bool, is_noexcept = false);
 };
 
 template <typename T, typename Property>
@@ -57,7 +58,7 @@ struct call_traits<T, void(Property),
       &&
       decay<Property>::type::is_requirable_concept
       &&
-      require_concept_static<
+      static_require_concept<
         typename decay<T>::type,
         typename decay<Property>::type
       >::is_valid
@@ -80,7 +81,7 @@ struct call_traits<T, void(Property),
       &&
       decay<Property>::type::is_requirable_concept
       &&
-      !require_concept_static<
+      !static_require_concept<
         typename decay<T>::type,
         typename decay<Property>::type
       >::is_valid
@@ -110,7 +111,7 @@ struct call_traits<T, void(Property),
       &&
       decay<Property>::type::is_requirable_concept
       &&
-      !require_concept_static<
+      !static_require_concept<
         typename decay<T>::type,
         typename decay<Property>::type
       >::is_valid
@@ -144,7 +145,7 @@ struct impl
   operator()(
       PROPRIA_MOVE_ARG(T) t,
       PROPRIA_MOVE_ARG(Property)) const
-    PROPRIA_CONDITIONAL_NOEXCEPT((
+    PROPRIA_NOEXCEPT_IF((
       call_traits<T, void(Property)>::is_noexcept))
   {
     return PROPRIA_MOVE_CAST(T)(t);
@@ -158,7 +159,7 @@ struct impl
   operator()(
       PROPRIA_MOVE_ARG(T) t,
       PROPRIA_MOVE_ARG(Property) p) const
-    PROPRIA_CONDITIONAL_NOEXCEPT((
+    PROPRIA_NOEXCEPT_IF((
       call_traits<T, void(Property)>::is_noexcept))
   {
     return PROPRIA_MOVE_CAST(T)(t).require_concept(
@@ -173,7 +174,7 @@ struct impl
   operator()(
       PROPRIA_MOVE_ARG(T) t,
       PROPRIA_MOVE_ARG(Property) p) const
-    PROPRIA_CONDITIONAL_NOEXCEPT((
+    PROPRIA_NOEXCEPT_IF((
       call_traits<T, void(Property)>::is_noexcept))
   {
     return require_concept(
@@ -213,6 +214,21 @@ struct can_require_concept :
 template <typename T, typename Property>
 constexpr bool can_require_concept_v
   = can_require_concept<T, Property>::value;
+
+#endif // defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
+
+template <typename T, typename Property>
+struct is_nothrow_require_concept :
+  detail::integral_constant<bool,
+    propria_require_concept_fn::call_traits<T, void(Property)>::is_noexcept>
+{
+};
+
+#if defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
+
+template <typename T, typename Property>
+constexpr bool is_nothrow_require_concept_v
+  = is_nothrow_require_concept<T, Property>::value;
 
 #endif // defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
 

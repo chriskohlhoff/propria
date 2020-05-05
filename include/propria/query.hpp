@@ -18,9 +18,9 @@
 #include "propria/detail/config.hpp"
 #include "propria/detail/type_traits.hpp"
 #include "propria/is_applicable_property.hpp"
-#include "propria/traits/query_static.hpp"
 #include "propria/traits/query_member.hpp"
 #include "propria/traits/query_free.hpp"
+#include "propria/traits/static_query.hpp"
 
 namespace propria_query_fn {
 
@@ -30,7 +30,7 @@ using propria::detail::enable_if;
 using propria::is_applicable_property;
 using propria::traits::query_free;
 using propria::traits::query_member;
-using propria::traits::query_static;
+using propria::traits::static_query;
 
 enum overload_type
 {
@@ -44,6 +44,7 @@ template <typename T, typename Properties, typename = void>
 struct call_traits
 {
   PROPRIA_STATIC_CONSTEXPR(overload_type, overload = ill_formed);
+  PROPRIA_STATIC_CONSTEXPR(bool, is_noexcept = false);
 };
 
 template <typename T, typename Property>
@@ -55,13 +56,13 @@ struct call_traits<T, void(Property),
         typename decay<Property>::type
       >::value
       &&
-      query_static<
+      static_query<
         typename decay<T>::type,
         typename decay<Property>::type
       >::is_valid
     )
   >::type> :
-  query_static<
+  static_query<
     typename decay<T>::type,
     typename decay<Property>::type
   >
@@ -78,7 +79,7 @@ struct call_traits<T, void(Property),
         typename decay<Property>::type
       >::value
       &&
-      !query_static<
+      !static_query<
         typename decay<T>::type,
         typename decay<Property>::type
       >::is_valid
@@ -106,7 +107,7 @@ struct call_traits<T, void(Property),
         typename decay<Property>::type
       >::value
       &&
-      !query_static<
+      !static_query<
         typename decay<T>::type,
         typename decay<Property>::type
       >::is_valid
@@ -140,10 +141,10 @@ struct impl
   operator()(
       PROPRIA_MOVE_ARG(T),
       PROPRIA_MOVE_ARG(Property)) const
-    PROPRIA_CONDITIONAL_NOEXCEPT((
+    PROPRIA_NOEXCEPT_IF((
       call_traits<T, void(Property)>::is_noexcept))
   {
-    return query_static<
+    return static_query<
       typename decay<T>::type,
       typename decay<Property>::type
     >::value();
@@ -157,7 +158,7 @@ struct impl
   operator()(
       PROPRIA_MOVE_ARG(T) t,
       PROPRIA_MOVE_ARG(Property) p) const
-    PROPRIA_CONDITIONAL_NOEXCEPT((
+    PROPRIA_NOEXCEPT_IF((
       call_traits<T, void(Property)>::is_noexcept))
   {
     return PROPRIA_MOVE_CAST(T)(t).query(PROPRIA_MOVE_CAST(Property)(p));
@@ -171,7 +172,7 @@ struct impl
   operator()(
       PROPRIA_MOVE_ARG(T) t,
       PROPRIA_MOVE_ARG(Property) p) const
-    PROPRIA_CONDITIONAL_NOEXCEPT((
+    PROPRIA_NOEXCEPT_IF((
       call_traits<T, void(Property)>::is_noexcept))
   {
     return query(PROPRIA_MOVE_CAST(T)(t), PROPRIA_MOVE_CAST(Property)(p));
@@ -211,6 +212,13 @@ constexpr bool can_query_v
   = can_query<T, Property>::value;
 
 #endif // defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
+
+template <typename T, typename Property>
+struct is_nothrow_query :
+  detail::integral_constant<bool,
+    propria_query_fn::call_traits<T, void(Property)>::is_noexcept>
+{
+};
 
 } // namespace propria
 

@@ -11,13 +11,13 @@ nobase_include_HEADERS = \
 	propria/traits/prefer_free.hpp \
 	propria/traits/query_free.hpp \
 	propria/traits/query_member.hpp \
-	propria/traits/query_static.hpp \
 	propria/traits/require_concept_free.hpp \
 	propria/traits/require_concept_member.hpp \
-	propria/traits/require_concept_static.hpp \
 	propria/traits/require_free.hpp \
 	propria/traits/require_member.hpp \
-	propria/traits/require_static.hpp
+	propria/traits/static_query.hpp \
+	propria/traits/static_require.hpp \
+	propria/traits/static_require_concept.hpp
 
 MAINTAINERCLEANFILES = \
 	$(srcdir)/Makefile.in

@@ -63,7 +63,14 @@ struct query_member_trait
 namespace traits {
 
 template <typename T, typename Property, typename = void>
-struct query_member : detail::query_member_trait<T, Property>
+struct query_member_default :
+  detail::query_member_trait<T, Property>
+{
+};
+
+template <typename T, typename Property, typename = void>
+struct query_member :
+  query_member_default<T, Property>
 {
 };
 

@@ -26,7 +26,7 @@ namespace propria {
 namespace traits {
 
 template<int N>
-struct require_static<object<N>, prop<N> >
+struct static_require<object<N>, prop<N> >
 {
   static const bool is_valid = true;
 };

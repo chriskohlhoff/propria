@@ -63,8 +63,14 @@ struct require_concept_member_trait
 namespace traits {
 
 template <typename T, typename Property, typename = void>
-struct require_concept_member :
+struct require_concept_member_default :
   detail::require_concept_member_trait<T, Property>
+{
+};
+
+template <typename T, typename Property, typename = void>
+struct require_concept_member :
+  require_concept_member_default<T, Property>
 {
 };
 

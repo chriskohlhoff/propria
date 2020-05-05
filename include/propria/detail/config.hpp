@@ -104,27 +104,28 @@
 #  if defined(__clang__)
 #   if __has_feature(__cxx_variadic_templates__)
 #    define PROPRIA_HAS_VARIADIC_TEMPLATES 1
-#    define PROPRIA_ELLIPSIS ...
 #   endif // __has_feature(__cxx_variadic_templates__)
 #  endif // defined(__clang__)
 #  if defined(__GNUC__)
 #   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 3)) || (__GNUC__ > 4)
 #    if (__cplusplus >= 201103) || defined(__GXX_EXPERIMENTAL_CXX0X__)
 #     define PROPRIA_HAS_VARIADIC_TEMPLATES 1
-#     define PROPRIA_ELLIPSIS ...
 #    endif // (__cplusplus >= 201103) || defined(__GXX_EXPERIMENTAL_CXX0X__)
 #   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 3)) || (__GNUC__ > 4)
 #  endif // defined(__GNUC__)
 #  if defined(PROPRIA_MSVC)
 #   if (_MSC_VER >= 1900)
 #    define PROPRIA_HAS_VARIADIC_TEMPLATES 1
-#    define PROPRIA_ELLIPSIS ...
 #   endif // (_MSC_VER >= 1900)
 #  endif // defined(PROPRIA_MSVC)
 # endif // !defined(PROPRIA_DISABLE_VARIADIC_TEMPLATES)
 #endif // !defined(PROPRIA_HAS_VARIADIC_TEMPLATES)
 #if !defined(PROPRIA_ELLIPSIS)
-# define PROPRIA_ELLIPSIS
+# if defined(PROPRIA_HAS_VARIADIC_TEMPLATES)
+#  define PROPRIA_ELLIPSIS ...
+# else // defined(PROPRIA_HAS_VARIADIC_TEMPLATES)
+#  define PROPRIA_ELLIPSIS
+# endif // defined(PROPRIA_HAS_VARIADIC_TEMPLATES)
 #endif // !defined(PROPRIA_ELLIPSIS)
 
 // Support deleted functions on compilers known to allow it.
@@ -176,14 +177,28 @@
 #if !defined(PROPRIA_CONSTEXPR)
 # if defined(PROPRIA_HAS_CONSTEXPR)
 #  define PROPRIA_CONSTEXPR constexpr
+# else // defined(PROPRIA_HAS_CONSTEXPR)
+#  define PROPRIA_CONSTEXPR
+# endif // defined(PROPRIA_HAS_CONSTEXPR)
+#endif // !defined(PROPRIA_CONSTEXPR)
+#if !defined(PROPRIA_STATIC_CONSTEXPR)
+# if defined(PROPRIA_HAS_CONSTEXPR)
 #  define PROPRIA_STATIC_CONSTEXPR(type, assignment) \
     static constexpr type assignment
 # else // defined(PROPRIA_HAS_CONSTEXPR)
-#  define PROPRIA_CONSTEXPR
 #  define PROPRIA_STATIC_CONSTEXPR(type, assignment) \
     static const type assignment
 # endif // defined(PROPRIA_HAS_CONSTEXPR)
-#endif // !defined(PROPRIA_CONSTEXPR)
+#endif // !defined(PROPRIA_STATIC_CONSTEXPR)
+#if !defined(PROPRIA_STATIC_CONSTEXPR_DEFAULT_INIT)
+# if defined(PROPRIA_HAS_CONSTEXPR)
+#  define PROPRIA_STATIC_CONSTEXPR_DEFAULT_INIT(type, name) \
+    static constexpr const type name{}
+# else // defined(PROPRIA_HAS_CONSTEXPR)
+#  define PROPRIA_STATIC_CONSTEXPR_DEFAULT_INIT(type, name) \
+    static const type name
+# endif // defined(PROPRIA_HAS_CONSTEXPR)
+#endif // !defined(PROPRIA_STATIC_CONSTEXPR_DEFAULT_INIT)
 
 // Support noexcept on compilers known to allow it.
 #if !defined(PROPRIA_HAS_NOEXCEPT)
@@ -191,38 +206,45 @@
 #  if defined(__clang__)
 #   if __has_feature(__cxx_noexcept__)
 #    define PROPRIA_HAS_NOEXCEPT 1
-#    define PROPRIA_NOEXCEPT noexcept(true)
-#    define PROPRIA_NOEXCEPT_OR_NOTHROW noexcept(true)
-#    define PROPRIA_CONDITIONAL_NOEXCEPT(c) noexcept(c)
 #   endif // __has_feature(__cxx_noexcept__)
 #  elif defined(__GNUC__)
 #   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
 #    if (__cplusplus >= 201103) || defined(__GXX_EXPERIMENTAL_CXX0X__)
 #      define PROPRIA_HAS_NOEXCEPT 1
-#      define PROPRIA_NOEXCEPT noexcept(true)
-#      define PROPRIA_NOEXCEPT_OR_NOTHROW noexcept(true)
-#      define PROPRIA_CONDITIONAL_NOEXCEPT(c) noexcept(c)
 #    endif // (__cplusplus >= 201103) || defined(__GXX_EXPERIMENTAL_CXX0X__)
 #   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
 #  elif defined(PROPRIA_MSVC)
 #   if (_MSC_VER >= 1900)
 #    define PROPRIA_HAS_NOEXCEPT 1
-#    define PROPRIA_NOEXCEPT noexcept(true)
-#    define PROPRIA_NOEXCEPT_OR_NOTHROW noexcept(true)
-#    define PROPRIA_CONDITIONAL_NOEXCEPT(c) noexcept(c)
 #   endif // (_MSC_VER >= 1900)
 #  endif // defined(PROPRIA_MSVC)
 # endif // !defined(PROPRIA_DISABLE_NOEXCEPT)
 # if !defined(PROPRIA_NOEXCEPT)
-#  define PROPRIA_NOEXCEPT
 # endif // !defined(PROPRIA_NOEXCEPT)
 # if !defined(PROPRIA_NOEXCEPT_OR_NOTHROW)
-#  define PROPRIA_NOEXCEPT_OR_NOTHROW throw()
 # endif // !defined(PROPRIA_NOEXCEPT_OR_NOTHROW)
-# if !defined(PROPRIA_CONDITIONAL_NOEXCEPT)
-#  define PROPRIA_CONDITIONAL_NOEXCEPT(c)
-# endif // !defined(PROPRIA_CONDITIONAL_NOEXCEPT)
 #endif // !defined(PROPRIA_HAS_NOEXCEPT)
+#if !defined(PROPRIA_NOEXCEPT)
+# if defined(PROPRIA_HAS_NOEXCEPT)
+#  define PROPRIA_NOEXCEPT noexcept(true)
+# else // defined(PROPRIA_HAS_NOEXCEPT)
+#  define PROPRIA_NOEXCEPT
+# endif // defined(PROPRIA_HAS_NOEXCEPT)
+#endif // !defined(PROPRIA_NOEXCEPT)
+#if !defined(PROPRIA_NOEXCEPT_OR_NOTHROW)
+# if defined(PROPRIA_HAS_NOEXCEPT)
+#  define PROPRIA_NOEXCEPT_OR_NOTHROW noexcept(true)
+# else // defined(PROPRIA_HAS_NOEXCEPT)
+#  define PROPRIA_NOEXCEPT_OR_NOTHROW throw()
+# endif // defined(PROPRIA_HAS_NOEXCEPT)
+#endif // !defined(PROPRIA_NOEXCEPT_OR_NOTHROW)
+#if !defined(PROPRIA_NOEXCEPT_IF)
+# if defined(PROPRIA_HAS_NOEXCEPT)
+#  define PROPRIA_NOEXCEPT_IF(c) noexcept(c)
+# else // defined(PROPRIA_HAS_NOEXCEPT)
+#  define PROPRIA_NOEXCEPT_IF(c)
+# endif // defined(PROPRIA_HAS_NOEXCEPT)
+#endif // !defined(PROPRIA_NOEXCEPT_IF)
 
 // Support automatic type deduction on compilers known to support it.
 #if !defined(PROPRIA_HAS_DECLTYPE)
@@ -274,9 +296,11 @@
 #if !defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
 # if !defined(PROPRIA_DISABLE_VARIABLE_TEMPLATES)
 #  if defined(__clang__)
-#   if __has_feature(__cxx_variable_templates__)
-#    define PROPRIA_HAS_VARIABLE_TEMPLATES 1
-#   endif // __has_feature(__cxx_variable_templates__)
+#   if (__cplusplus >= 201402)
+#    if __has_feature(__cxx_variable_templates__)
+#     define PROPRIA_HAS_VARIABLE_TEMPLATES 1
+#    endif // __has_feature(__cxx_variable_templates__)
+#   endif // (__cplusplus >= 201402)
 #  endif // defined(__clang__)
 #  if defined(__GNUC__)
 #   if (__GNUC__ >= 5)

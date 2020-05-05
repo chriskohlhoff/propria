@@ -33,7 +33,7 @@ struct is_applicable_property<object<N>, prop<M> >
 namespace traits {
 
 template<int N>
-struct require_concept_static<object<N>, prop<N> >
+struct static_require_concept<object<N>, prop<N> >
 {
   static constexpr bool is_valid = true;
 };

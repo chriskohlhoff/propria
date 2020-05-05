@@ -1,5 +1,5 @@
 //
-// traits/require_static.hpp
+// traits/static_require.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef PROPRIA_TRAITS_REQUIRE_STATIC_HPP
-#define PROPRIA_TRAITS_REQUIRE_STATIC_HPP
+#ifndef PROPRIA_TRAITS_STATIC_REQUIRE_HPP
+#define PROPRIA_TRAITS_STATIC_REQUIRE_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
@@ -26,7 +26,7 @@ namespace detail {
   && defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
 
 template <typename T, typename Property, typename = void>
-struct require_static_trait
+struct static_require_trait
 {
   PROPRIA_STATIC_CONSTEXPR(bool, is_valid = false);
 };
@@ -34,7 +34,7 @@ struct require_static_trait
 #if defined(PROPRIA_HAS_WORKING_EXPRESSION_SFINAE)
 
 template <typename T, typename Property>
-struct require_static_trait<T, Property,
+struct static_require_trait<T, Property,
   typename enable_if<
     Property::value() == Property::template static_query_v<T>
   >::type>
@@ -44,26 +44,26 @@ struct require_static_trait<T, Property,
 
 #else // defined(PROPRIA_HAS_WORKING_EXPRESSION_SFINAE)
 
-false_type require_static_test(...);
+false_type static_require_test(...);
 
 template <typename T, typename Property>
-true_type require_static_test(T*, Property*,
+true_type static_require_test(T*, Property*,
     typename enable_if<
       Property::value() == Property::template static_query_v<T>
     >::type* = 0);
 
 template <typename T, typename Property>
-struct has_require_static
+struct has_static_require
 {
   PROPRIA_STATIC_CONSTEXPR(bool, value =
-    decltype((require_static_test)(
+    decltype((static_require_test)(
       static_cast<T*>(0), static_cast<Property*>(0)))::value);
 };
 
 template <typename T, typename Property>
-struct require_static_trait<T, Property,
+struct static_require_trait<T, Property,
   typename enable_if<
-    has_require_static<T, Property>::value
+    has_static_require<T, Property>::value
   >::type>
 {
   PROPRIA_STATIC_CONSTEXPR(bool, is_valid = true);
@@ -76,7 +76,7 @@ struct require_static_trait<T, Property,
       //   && defined(PROPRIA_HAS_VARIABLE_TEMPLATES)
 
 template <typename T, typename Property>
-struct require_static_trait
+struct static_require_trait
 {
   PROPRIA_STATIC_CONSTEXPR(bool, is_valid = false);
 };
@@ -89,11 +89,16 @@ struct require_static_trait
 namespace traits {
 
 template <typename T, typename Property, typename = void>
-struct require_static : detail::require_static_trait<T, Property>
+struct static_require_default : detail::static_require_trait<T, Property>
+{
+};
+
+template <typename T, typename Property, typename = void>
+struct static_require : static_require_default<T, Property>
 {
 };
 
 } // namespace traits
 } // namespace propria
 
-#endif // PROPRIA_TRAITS_REQUIRE_STATIC_HPP
+#endif // PROPRIA_TRAITS_STATIC_REQUIRE_HPP
