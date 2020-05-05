@@ -43,7 +43,7 @@ struct static_require<object<N>, prop<N> >
 
 int main()
 {
-  object<1> o1;
+  object<1> o1 = {};
   object<1> o2 = propria::require(o1, prop<1>());
   object<1> o3 = propria::require(o1, prop<1>(), prop<1>());
   object<1> o4 = propria::require(o1, prop<1>(), prop<1>(), prop<1>());
@@ -51,7 +51,7 @@ int main()
   (void)o3;
   (void)o4;
 
-  const object<1> o5;
+  const object<1> o5 = {};
   object<1> o6 = propria::require(o5, prop<1>());
   object<1> o7 = propria::require(o5, prop<1>(), prop<1>());
   object<1> o8 = propria::require(o5, prop<1>(), prop<1>(), prop<1>());

@@ -43,12 +43,12 @@ struct static_require_concept<object<N>, prop<N> >
 
 int main()
 {
-  object<1> o1;
+  object<1> o1 = {};
   const object<1>& o2 = propria::require_concept(o1, prop<1>());
   assert(&o1 == &o2);
   (void)o2;
 
-  const object<1> o3;
+  const object<1> o3 = {};
   const object<1>& o4 = propria::require_concept(o3, prop<1>());
   assert(&o3 == &o4);
   (void)o4;

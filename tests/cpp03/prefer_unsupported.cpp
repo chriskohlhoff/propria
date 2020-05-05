@@ -34,12 +34,12 @@ struct is_applicable_property<object<N>, prop<M> >
 
 int main()
 {
-  object<1> o1;
+  object<1> o1 = {};
   const object<1>& o2 = propria::prefer(o1, prop<1>());
   assert(&o1 == &o2);
   (void)o2;
 
-  const object<1> o3;
+  const object<1> o3 = {};
   const object<1>& o4 = propria::prefer(o3, prop<1>());
   assert(&o3 == &o4);
   (void)o4;

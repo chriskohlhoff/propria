@@ -43,12 +43,12 @@ struct static_query<object, prop>
 
 int main()
 {
-  object o1;
+  object o1 = {};
   int result1 = propria::query(o1, prop());
   assert(result1 == 123);
   (void)result1;
 
-  const object o2;
+  const object o2 = {};
   int result2 = propria::query(o2, prop());
   assert(result2 == 123);
   (void)result2;

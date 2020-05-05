@@ -34,7 +34,7 @@ struct is_applicable_property<object<N>, prop<M> >
 
 int main()
 {
-  object<1> o1;
+  object<1> o1 = {};
   object<1> o2 = propria::prefer(o1, prop<2>());
   object<1> o3 = propria::prefer(o1, prop<2>(), prop<3>());
   object<1> o4 = propria::prefer(o1, prop<2>(), prop<3>(), prop<4>());
@@ -42,7 +42,7 @@ int main()
   (void)o3;
   (void)o4;
 
-  const object<1> o5;
+  const object<1> o5 = {};
   object<1> o6 = propria::prefer(o5, prop<2>());
   object<1> o7 = propria::prefer(o5, prop<2>(), prop<3>());
   object<1> o8 = propria::prefer(o5, prop<2>(), prop<3>(), prop<4>());

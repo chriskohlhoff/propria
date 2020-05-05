@@ -39,11 +39,11 @@ struct is_applicable_property<object<N>, prop<M> >
 
 int main()
 {
-  object<1> o1;
+  object<1> o1 = {};
   object<2> o2 = propria::require_concept(o1, prop<2>());
   (void)o2;
 
-  const object<1> o3;
+  const object<1> o3 = {};
   object<2> o4 = propria::require_concept(o3, prop<2>());
   (void)o4;
 
