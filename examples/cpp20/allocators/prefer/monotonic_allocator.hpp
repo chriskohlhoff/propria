@@ -55,7 +55,7 @@ public:
   }
 
   monotonic_allocator(const monotonic_allocator&) noexcept = default;
-  monotonic_allocator& operator=(const monotonic_allocator&) noexcept = default;
+  monotonic_allocator& operator=(const monotonic_allocator&) noexcept = delete;
 
   void* allocate(std::size_t n) const
   {
