@@ -389,6 +389,16 @@
 # endif // !defined(PROPRIA_DISABLE_STD_TYPE_TRAITS)
 #endif // !defined(PROPRIA_HAS_STD_TYPE_TRAITS)
 
+// Some versions of gcc generate spurious warnings about unused variables.
+#if defined(__GNUC__)
+# if (__GNUC__ >= 4)
+#  define PROPRIA_UNUSED_VARIABLE __attribute__((__unused__))
+# endif // (__GNUC__ >= 4)
+#endif // defined(__GNUC__)
+#if !defined(PROPRIA_UNUSED_VARIABLE)
+# define PROPRIA_UNUSED_VARIABLE
+#endif // !defined(ASIO_UNUSED_VARIABLE)
+
 #endif // PROPRIA_DETAIL_CONFIG_HPP
 
 //
@@ -972,7 +982,8 @@ namespace propria {
 namespace {
 
 static PROPRIA_CONSTEXPR const propria_require_concept_fn::impl&
-  require_concept = propria_require_concept_fn::static_instance<>::instance;
+  require_concept PROPRIA_UNUSED_VARIABLE
+    = propria_require_concept_fn::static_instance<>::instance;
 
 } // namespace
 
@@ -1598,7 +1609,8 @@ namespace propria {
 namespace {
 
 static PROPRIA_CONSTEXPR const propria_require_fn::impl&
-  require = propria_require_fn::static_instance<>::instance;
+  require PROPRIA_UNUSED_VARIABLE
+    = propria_require_fn::static_instance<>::instance;
 
 } // namespace
 
@@ -2153,7 +2165,8 @@ namespace propria {
 namespace {
 
 static PROPRIA_CONSTEXPR const propria_prefer_fn::impl&
-  prefer = propria_prefer_fn::static_instance<>::instance;
+  prefer PROPRIA_UNUSED_VARIABLE
+    = propria_prefer_fn::static_instance<>::instance;
 
 } // namespace
 
@@ -2720,7 +2733,8 @@ namespace propria {
 namespace {
 
 static PROPRIA_CONSTEXPR const propria_query_fn::impl&
-  query = propria_query_fn::static_instance<>::instance;
+  query PROPRIA_UNUSED_VARIABLE
+    = propria_query_fn::static_instance<>::instance;
 
 } // namespace
 
