@@ -18,7 +18,7 @@ concept proto_allocator = requires(const T& t, std::size_t n)
 {
   { T(t) } noexcept;
   { t.allocate(n) };
-  { t.deallocate(nullptr) } -> void;
+  { t.deallocate(nullptr) };
 };
 
 template <class T>
@@ -28,8 +28,8 @@ template <class T, class U>
 concept typed_allocator = requires(const T& t, std::size_t n, U* p)
 {
   { T(t) } noexcept;
-  { t.allocate(n) } -> U*;
-  { t.deallocate(p) } -> void;
+  { static_cast<U*>(t.allocate(n)) };
+  { t.deallocate(p) };
 };
 
 template <class T, class U>

@@ -17,8 +17,8 @@ template <class T>
 concept allocator = requires(const T& t, std::size_t n, void* p)
 {
   { T(t) } noexcept;
-  { t.allocate(n) } -> void*;
-  { t.deallocate(p) } -> void;
+  { static_cast<void*>(t.allocate(n)) };
+  { t.deallocate(p) };
 };
 
 template <class T>
