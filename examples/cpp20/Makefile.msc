@@ -1,0 +1,94 @@
+COMMON_CXXFLAGS = -nologo -GR -EHsc -I. -I../../include
+
+!ifdef CXXLATEST
+STD_CXXFLAGS = -std:c++latest
+!endif
+
+!ifdef WARNINGS
+WARNINGS_CXXFLAGS = -W4
+!endif
+
+!ifdef STATICRTL
+! ifdef DEBUG
+DEBUG_CXXFLAGS = -Zi -MTd
+! else
+DEBUG_CXXFLAGS = -O2 -MT
+! endif
+!else
+! ifdef DEBUG
+DEBUG_CXXFLAGS = -Zi -MDd
+! else
+DEBUG_CXXFLAGS = -O2 -MD
+! endif
+!endif
+
+CXXFLAGS = \
+	$(STD_CXXFLAGS) \
+	$(COMMON_CXXFLAGS) \
+	$(WARNINGS_CXXFLAGS) \
+	$(DEBUG_CXXFLAGS)
+
+!ifdef CXXLATEST
+
+CPP20_EXAMPLE_EXES = \
+	allocators\query\main.exe \
+	allocators\query_with_fallback\main.exe \
+	allocators\require\main.exe \
+	allocators\prefer\main.exe \
+	allocators\require_concept\main.exe
+
+!endif
+
+EXAMPLE_EXES = \
+	$(CPP20_EXAMPLE_EXES)
+
+all: \
+	$(EXAMPLE_EXES)
+
+{allocators\query}.cpp{allocators\query}.exe:
+	cl -Fe$@ -Fo$(<:.cpp=.obj) $(CXXFLAGS) $(DEFINES) $< $(LIBS) -link -opt:ref
+
+{allocators\query_with_fallback}.cpp{allocators\query_with_fallback}.exe:
+	cl -Fe$@ -Fo$(<:.cpp=.obj) $(CXXFLAGS) $(DEFINES) $< $(LIBS) -link -opt:ref
+
+{allocators\require}.cpp{allocators\require}.exe:
+	cl -Fe$@ -Fo$(<:.cpp=.obj) $(CXXFLAGS) $(DEFINES) $< $(LIBS) -link -opt:ref
+
+{allocators\prefer}.cpp{allocators\prefer}.exe:
+	cl -Fe$@ -Fo$(<:.cpp=.obj) $(CXXFLAGS) $(DEFINES) $< $(LIBS) -link -opt:ref
+
+{allocators\require_concept}.cpp{allocators\require_concept}.exe:
+	cl -Fe$@ -Fo$(<:.cpp=.obj) $(CXXFLAGS) $(DEFINES) $< $(LIBS) -link -opt:ref
+
+clean:
+	-del /q /s allocators\query\*.exe
+	-del /q /s allocators\query\*.exe.manifest
+	-del /q /s allocators\query\*.exp
+	-del /q /s allocators\query\*.ilk
+	-del /q /s allocators\query\*.pdb
+	-del /q /s allocators\query\*.obj
+	-del /q /s allocators\query_with_fallback\*.exe
+	-del /q /s allocators\query_with_fallback\*.exe.manifest
+	-del /q /s allocators\query_with_fallback\*.exp
+	-del /q /s allocators\query_with_fallback\*.ilk
+	-del /q /s allocators\query_with_fallback\*.pdb
+	-del /q /s allocators\query_with_fallback\*.obj
+	-del /q /s allocators\require\*.exe
+	-del /q /s allocators\require\*.exe.manifest
+	-del /q /s allocators\require\*.exp
+	-del /q /s allocators\require\*.ilk
+	-del /q /s allocators\require\*.pdb
+	-del /q /s allocators\require\*.obj
+	-del /q /s allocators\prefer\*.exe
+	-del /q /s allocators\prefer\*.exe.manifest
+	-del /q /s allocators\prefer\*.exp
+	-del /q /s allocators\prefer\*.ilk
+	-del /q /s allocators\prefer\*.pdb
+	-del /q /s allocators\prefer\*.obj
+	-del /q /s allocators\require_concept\*.exe
+	-del /q /s allocators\require_concept\*.exe.manifest
+	-del /q /s allocators\require_concept\*.exp
+	-del /q /s allocators\require_concept\*.ilk
+	-del /q /s allocators\require_concept\*.pdb
+	-del /q /s allocators\require_concept\*.obj
+	-del /q /s *.pdb
