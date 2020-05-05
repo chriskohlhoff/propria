@@ -84,7 +84,7 @@ private:
   std::size_t alignment_;
 };
 
-monotonic_allocator monotonic_resource::get_allocator() noexcept
+inline monotonic_allocator monotonic_resource::get_allocator() noexcept
 {
   return monotonic_allocator(*this);
 }

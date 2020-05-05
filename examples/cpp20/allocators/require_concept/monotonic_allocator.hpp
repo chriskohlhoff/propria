@@ -86,7 +86,7 @@ private:
   monotonic_resource& resource_;
 };
 
-monotonic_allocator<char> monotonic_resource::get_allocator() noexcept
+inline monotonic_allocator<char> monotonic_resource::get_allocator() noexcept
 {
   return monotonic_allocator<char>(*this);
 }
